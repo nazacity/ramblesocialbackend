@@ -47,8 +47,34 @@ passport.use(
     const token = extractToken(req.headers);
 
     try {
+      await jwt.verify(token, config.jwt.secret, { issuer: config.jwt.issuer });
+      const jwt_payload = jwt.decode(token);
+
+      let user = await User.findOne({ _id: jwt_payload.sub }, { password: 0 });
+
+      if (jwt_payload.type !== 'user') {
+        done(null, false);
+      }
+
+      if (user) {
+        done(null, user);
+      } else {
+        done(null, false);
+      }
+    } catch (error) {
+      return done(null, false, { message: 'Invalid Token.' });
+    }
+  })
+);
+
+passport.use(
+  'employeeJwt',
+  new CustomStrategy(async function (req, done) {
+    const token = extractToken(req.headers);
+
+    try {
       let res = await axios.get(
-        'http://localhost:5000/api/users/getuserbyjwt',
+        `${config.main.URL}/api/employees/getemployeebyjwt`,
         {
           headers: {
             Authorization: `Bearer ${token}`,

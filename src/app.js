@@ -35,31 +35,44 @@ const createServer = async () => {
     require('./routes/users')
   );
 
+  // Employee Routes
+  app.use(
+    '/api/employees',
+    passport.authenticate('employeeJwt'),
+    require('./routes/employees')
+  );
+
+  // Everyone
+  app.use('/api/everyone', require('./routes/everyone'));
+
   const server = app.listen(config.port, () => {
     console.log('Server listening on port' + config.port);
   });
 
-  const io = socketio(server).sockets;
+  // const io = socketio(server).sockets;
 
-  io.use(async (socket, next) => {
-    try {
-      const token = socket.handshake.query.token;
-      await jwt.verify(token, config.jwt.secret, { issuer: config.jwt.issuer });
-      const jwt_payload = jwt.decode(token);
-      jwt_payload.sub;
+  // io.use(async (socket, next) => {
+  //   try {
+  //     const token = socket.handshake.query.token;
+  //     await jwt.verify(token, config.jwt.secret, { issuer: config.jwt.issuer });
+  //     const jwt_payload = jwt.decode(token);
+  //     jwt_payload.sub;
 
-      socket.userId = jwt_payload.sub;
-      next();
-    } catch (err) {}
-  });
+  //     socket.userId = jwt_payload.sub;
+  //     next();
+  //   } catch (err) {}
+  // });
 
-  io.on('connection', (socket) => {
-    console.log('Connected: ' + socket.userId);
+  // io.on('connection', (socket) => {
+  //   console.log('Connected: ' + socket.userId);
 
-    socket.on('disconnect', () => {
-      console.log('Disconnected: ' + socket.userId);
-    });
-  });
+  //   socket.on('disconnect', () => {
+  //     console.log('Disconnected: ' + socket.userId);
+  //   });
+  // });
+
+  // app.listen(config.port);
+  // console.info(`Server is listening on port ${config.port}`);
 };
 
 createServer();

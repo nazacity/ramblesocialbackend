@@ -1,6 +1,7 @@
 'use strict';
 
 module.exports = {
+  activity_post: ['active', 'banned'],
   activity_state: [
     'pre_register',
     'registering',
@@ -9,18 +10,7 @@ module.exports = {
     'finished',
     'cancel',
   ],
-  user_activity_state: [
-    'change_course_waiting_payment',
-    'refund',
-    'waiting_payment',
-    'upcoming',
-    'actual_date',
-    'checked_in',
-    'finished',
-    'cancel',
-    'not_finished',
-    'history',
-  ],
-  user_post: ['finding', 'closing'],
-  announcement_state: ['not_read', 'read'],
+  blog_category: ['active', 'deactive'],
+  social_category: ['active', 'deactive'],
+  social_post: ['active', 'banned'],
 };
