@@ -10,6 +10,7 @@ const blog = new Schema(
     url: { type: String, require: true },
     description: { type: String, require: true },
     picture_url: { type: String, require: true },
+    likeCount: { type: Number, require: true, default: 0 },
     likers: [
       {
         type: mongoose.Schema.Types.ObjectId,

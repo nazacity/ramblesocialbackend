@@ -8,7 +8,7 @@ const jwt = require('jsonwebtoken');
 
 const config = require('./utils/config');
 const { User } = require('./models');
-const { default: axios } = require('axios');
+const axios = require('axios');
 
 function _calculateAge(birthday) {
   // birthday is a date
@@ -59,7 +59,26 @@ passport.use(
       if (user) {
         done(null, user);
       } else {
-        done(null, false);
+        // done(null, false);
+
+        const getUser = await axios.get(
+          `${config.main.URL}/api/users/getuserbyjwt`,
+          {
+            headers: {
+              authorization: req.headers.authorization,
+            },
+          }
+        );
+
+        if (getUser) {
+          const newUser = await User.create({
+            _id: getUser.data._id,
+            display_name: getUser.data.display_name,
+            user_picture_url: getUser.data.user_picture_url,
+          });
+
+          done(null, newUser);
+        }
       }
     } catch (error) {
       return done(null, false, { message: 'Invalid Token.' });

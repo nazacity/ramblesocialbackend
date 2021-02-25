@@ -7,7 +7,7 @@ const config = require('../../utils/config');
 const axios = require('axios');
 
 const { standardize } = require('../../utils/request');
-const { UserService } = require('../../services');
+const { UserService, BlogService } = require('../../services');
 
 const getUserByJwt = standardize(async (req, res) => {
   return res.json(req.user);
@@ -35,7 +35,88 @@ const editUser = standardize(async (req, res) => {
   });
 });
 
+const getBlogCategories = standardize(async (req, res) => {
+  res.json({
+    status: 200,
+    data: await BlogService.getBlogCategories(),
+  });
+});
+
+const likeBlog = standardize(async (req, res) => {
+  const paramSchema = Joi.object({
+    id: Joi.string().required(),
+  });
+
+  const { id } = Joi.attempt(req.params, paramSchema);
+  res.json({
+    status: 200,
+    data: await BlogService.likeBlog(id, req.user.id),
+  });
+});
+
+const unlikeBlog = standardize(async (req, res) => {
+  const paramSchema = Joi.object({
+    id: Joi.string().required(),
+  });
+
+  const { id } = Joi.attempt(req.params, paramSchema);
+  res.json({
+    status: 200,
+    data: await BlogService.unlikeBlog(id, req.user.id),
+  });
+});
+
+const getBlog = standardize(async (req, res) => {
+  const paramSchema = Joi.object({
+    id: Joi.string().required(),
+  });
+
+  const { id } = Joi.attempt(req.params, paramSchema);
+  res.json({
+    status: 200,
+    data: await BlogService.getBlog(id),
+  });
+});
+
+const createBlogComment = standardize(async (req, res) => {
+  const paramSchema = Joi.object({
+    id: Joi.string().required(),
+  });
+
+  const schema = Joi.object({
+    text: Joi.string().required(),
+    user: Joi.string().required(),
+  });
+
+  const data = Joi.attempt({ ...req.body, user: req.user.id }, schema);
+
+  const { id } = Joi.attempt(req.params, paramSchema);
+  res.json({
+    status: 200,
+    data: await BlogService.createBlogComment(id, data),
+  });
+});
+
+const getBlogs = standardize(async (req, res) => {
+  const paramSchema = Joi.object({
+    id: Joi.string().required(),
+  });
+
+  const { id } = Joi.attempt(req.params, paramSchema);
+
+  res.json({
+    status: 200,
+    data: await BlogService.getBlogs(id),
+  });
+});
+
 router.post('/edituser', editUser);
 router.get('/getuserbyjwt', getUserByJwt);
+router.get('/getblogcategories', getBlogCategories);
+router.get('/likeblog/:id', likeBlog);
+router.get('/unlikeblog/:id', unlikeBlog);
+router.get('/getblog/:id', getBlog);
+router.post('/createblogcomment/:id', createBlogComment);
+router.get('/getblogs/:id', getBlogs);
 
 module.exports = router;

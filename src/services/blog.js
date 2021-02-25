@@ -56,6 +56,101 @@ class BlogService extends AbstractService {
     });
     return blog;
   }
+
+  async getBlogCategories() {
+    const blogCategories = await this.models.BlogCategory.find({}).populate({
+      path: 'blogs',
+      options: {
+        limit: 5,
+        sort: { createdAt: -1 },
+      },
+    });
+
+    return blogCategories;
+  }
+
+  async likeBlog(id, userId) {
+    const blog = await this.models.Blog.findById(id);
+    const likers = [...blog.likers, userId];
+    const likeCount = blog.likeCount + 1;
+    const newBlog = await this.models.Blog.findByIdAndUpdate(id, {
+      $set: {
+        likers: likers,
+        likeCount: likeCount,
+      },
+    });
+    return 'Successed';
+  }
+
+  async unlikeBlog(id, userId) {
+    const blog = await this.models.Blog.findById(id);
+    const likers = blog.likers.filter((item) => item.toString() !== userId);
+    const likeCount = blog.likeCount - 1;
+    const newBlog = await this.models.Blog.findByIdAndUpdate(id, {
+      $set: {
+        likers: likers,
+        likeCount: likeCount,
+      },
+    });
+    return 'Successed';
+  }
+
+  async getBlog(id) {
+    const blog = await this.models.Blog.findById(id).populate({
+      path: 'blog_comments',
+      options: {
+        sort: { createdAt: -1 },
+      },
+      populate: {
+        path: 'user',
+        select: {
+          display_name: 1,
+          user_picture_url: 1,
+        },
+      },
+    });
+
+    return blog;
+  }
+
+  async createBlogComment(id, data) {
+    const blog = await this.models.Blog.findById(id);
+    const comment = await this.models.BlogComment.create(data);
+    const newBlog = await this.models.Blog.findByIdAndUpdate(
+      id,
+      {
+        $set: {
+          blog_comments: [...blog.blog_comments, comment._id],
+        },
+      },
+      { new: true }
+    ).populate({
+      path: 'blog_comments',
+      options: {
+        sort: { createdAt: -1 },
+      },
+      populate: {
+        path: 'user',
+        select: {
+          display_name: 1,
+          user_picture_url: 1,
+        },
+      },
+    });
+
+    return newBlog;
+  }
+
+  async getBlogs(id) {
+    const blogs = await this.models.BlogCategory.findById(id).populate({
+      path: 'blogs',
+      options: {
+        sort: { createdAt: -1 },
+      },
+    });
+
+    return blogs;
+  }
 }
 
 module.exports = BlogService;
