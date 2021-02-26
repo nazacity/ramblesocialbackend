@@ -60,7 +60,7 @@ passport.use(
         done(null, user);
       } else {
         // done(null, false);
-
+        console.log('test');
         const getUser = await axios.get(
           `${config.main.URL}/api/users/getuserbyjwt`,
           {
@@ -69,7 +69,7 @@ passport.use(
             },
           }
         );
-
+        console.log(getUser);
         if (getUser) {
           const newUser = await User.create({
             _id: getUser.data._id,
@@ -78,6 +78,7 @@ passport.use(
               ? getUser.data.user_picture_url
               : '',
           });
+          console.log(newUser);
 
           done(null, newUser);
         }
