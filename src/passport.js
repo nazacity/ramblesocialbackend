@@ -69,8 +69,9 @@ passport.use(
             },
           }
         );
-        console.log(getUser);
+
         if (getUser) {
+          console.log('test', getUser.data);
           const newUser = await User.create({
             _id: getUser.data._id,
             display_name: getUser.data.display_name,
