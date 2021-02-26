@@ -80,7 +80,6 @@ passport.use(
               ? getUser.data.user_picture_url
               : '',
           });
-          console.log(newUser);
 
           done(null, newUser);
         }
