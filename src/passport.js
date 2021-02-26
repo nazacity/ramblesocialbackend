@@ -74,7 +74,9 @@ passport.use(
           const newUser = await User.create({
             _id: getUser.data._id,
             display_name: getUser.data.display_name,
-            user_picture_url: getUser.data.user_picture_url,
+            user_picture_url: getUser.data.user_picture_url
+              ? getUser.data.user_picture_url
+              : '',
           });
 
           done(null, newUser);

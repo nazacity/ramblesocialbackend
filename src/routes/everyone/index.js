@@ -10,7 +10,7 @@ const createUser = async (req, res) => {
   const schema = Joi.object({
     _id: Joi.string().required(),
     display_name: Joi.string(),
-    user_picture_url: Joi.string(),
+    user_picture_url: Joi.string().allow(null),
   });
 
   const user = Joi.attempt(req.body, schema);
