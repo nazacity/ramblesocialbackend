@@ -60,7 +60,7 @@ passport.use(
         done(null, user);
       } else {
         // done(null, false);
-        console.log('test');
+        console.log(config.main.URL);
         const getUser = await axios.get(
           `${config.main.URL}/api/users/getuserbyjwt`,
           {

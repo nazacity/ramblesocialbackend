@@ -8,7 +8,7 @@ const config = {
     URL: process.env.MONGO_URL || 'mongodb://localhost:27017',
   },
   main: {
-    URL: process.env.SOCIAL_URL || 'http://localhost:5000',
+    URL: process.env.MAIN_URL || 'http://localhost:5000',
   },
   jwt: {
     issuer: process.env.JWT_ISSUER || 'ramble',
