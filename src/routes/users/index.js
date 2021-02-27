@@ -134,7 +134,6 @@ const postSocialCategories = standardize(async (req, res) => {
       console.log(error);
       return res.status(400).json({ data: 'Something went wrong' });
     } else {
-      console.log(req.files);
       const pictures = req.files.map((item) => {
         return { picture_url: item.location };
       });

@@ -13,6 +13,7 @@ const config = require('./utils/config');
 const { waitForDBConnection } = require('./utils/mongo');
 const socketio = require('socket.io');
 const jwt = require('jsonwebtoken');
+var bodyParser = require('body-parser');
 
 require('./models');
 const app = express();
@@ -24,6 +25,15 @@ app.use(cors());
 
 app.use(express.json());
 app.use(passport.initialize());
+
+app.use(bodyParser.json({ limit: '50mb' }));
+app.use(
+  bodyParser.urlencoded({
+    limit: '50mb',
+    extended: true,
+    parameterLimit: 50000,
+  })
+);
 
 const createServer = async () => {
   await waitForDBConnection;
