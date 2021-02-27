@@ -69,6 +69,20 @@ class BlogService extends AbstractService {
     return blogCategories;
   }
 
+  async getUserBlogCategories() {
+    const blogCategories = await this.models.BlogCategory.find({
+      state: 'active',
+    }).populate({
+      path: 'blogs',
+      options: {
+        limit: 5,
+        sort: { createdAt: -1 },
+      },
+    });
+
+    return blogCategories;
+  }
+
   async likeBlog(id, userId) {
     const blog = await this.models.Blog.findById(id);
     const likers = [...blog.likers, userId];

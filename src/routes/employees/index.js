@@ -9,7 +9,12 @@ const {
   enum: permissionEnum,
 } = require('../../utils/constants/employee');
 const { standardize } = require('../../utils/request');
-const { UserService, ActivityService, BlogService } = require('../../services');
+const {
+  UserService,
+  ActivityService,
+  BlogService,
+  SocialService,
+} = require('../../services');
 
 const createActivity = standardize(async (req, res) => {
   const schema = Joi.object({
@@ -126,5 +131,46 @@ router.delete('/blogcategory/:id', deleteBlogCategory);
 router.post('/changeblogcategorystate/:id', changeBlogCategoryState);
 router.post('/changeblogstate/:id', changeBlogState);
 router.post('/createblog', createBlog);
+
+const createSocialCategory = standardize(async (req, res) => {
+  const schema = Joi.object({
+    title_th: Joi.string().required(),
+    title_en: Joi.string().required(),
+    picture_url: Joi.string().required(),
+  });
+
+  const data = Joi.attempt(req.body, schema);
+
+  const social = await SocialService.createSocialCategory(data);
+
+  res.status(200).send({
+    status: 200,
+    data: social,
+  });
+}, permission.ADMIN);
+
+const changeSocialCategoryState = standardize(async (req, res) => {
+  const schema = Joi.object({
+    state: Joi.string().required(),
+  });
+
+  const paramSchema = Joi.object({
+    id: Joi.string().required(),
+  });
+
+  const { id } = Joi.attempt(req.params, paramSchema);
+
+  const data = Joi.attempt(req.body, schema);
+
+  const blogCategory = await SocialService.changeSocialCategoryState(id, data);
+
+  res.status(200).send({
+    status: 200,
+    data: blogCategory,
+  });
+}, permission.ADMIN);
+
+router.post('/createsocialcategory', createSocialCategory);
+router.post('/changesocialcategorystate/:id', changeSocialCategoryState);
 
 module.exports = router;

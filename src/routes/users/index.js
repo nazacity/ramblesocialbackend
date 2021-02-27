@@ -7,7 +7,7 @@ const config = require('../../utils/config');
 const axios = require('axios');
 
 const { standardize } = require('../../utils/request');
-const { UserService, BlogService } = require('../../services');
+const { UserService, BlogService, SocialService } = require('../../services');
 
 const getUserByJwt = standardize(async (req, res) => {
   return res.json(req.user);
@@ -38,7 +38,7 @@ const editUser = standardize(async (req, res) => {
 const getBlogCategories = standardize(async (req, res) => {
   res.json({
     status: 200,
-    data: await BlogService.getBlogCategories(),
+    data: await BlogService.getUserBlogCategories(),
   });
 });
 
@@ -118,5 +118,14 @@ router.get('/unlikeblog/:id', unlikeBlog);
 router.get('/getblog/:id', getBlog);
 router.post('/createblogcomment/:id', createBlogComment);
 router.get('/getblogs/:id', getBlogs);
+
+const getSocialCategories = standardize(async (req, res) => {
+  res.json({
+    status: 200,
+    data: await SocialService.getUserSocialCategories(),
+  });
+});
+
+router.get('/getsocialcategories', getSocialCategories);
 
 module.exports = router;

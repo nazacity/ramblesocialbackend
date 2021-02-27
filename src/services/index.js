@@ -7,8 +7,9 @@ const models = require('../models');
 const services = {
   ActivityService: require('./activity'),
   BlogService: require('./blog'),
-  UserService: require('./user'),
   EmployeeService: require('./employee'),
+  SocialService: require('./social'),
+  UserService: require('./user'),
 };
 
 _.forEach(services, (service, key) => {
