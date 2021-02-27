@@ -37,6 +37,51 @@ class SocialService extends AbstractService {
       }
     );
   }
+
+  async createPostSocialCategory(data) {
+    return this.models.SocialPost.create(data);
+  }
+
+  async updatedSocialCategoryPost(id, post_id) {
+    const socialCategory = await this.models.SocialCategory.findById(id);
+    const post = [post_id, ...socialCategory.social_posts];
+    return await this.models.SocialCategory.findByIdAndUpdate(
+      id,
+      {
+        $set: {
+          social_posts: post,
+        },
+      },
+      {
+        new: true,
+      }
+    ).populate({
+      path: 'social_posts',
+      populate: {
+        path: 'user',
+        select: {
+          display_name: 1,
+          user_picture_url: 1,
+        },
+      },
+    });
+  }
+
+  async getSocialCategoryPost(id) {
+    return this.models.SocialCategory.findById(id);
+  }
+
+  async getPosts(ids) {
+    return this.models.SocialPost.find({ _id: { $in: ids } }, null, {
+      sort: { createdAt: -1 },
+    }).populate({
+      path: 'user',
+      select: {
+        display_name: 1,
+        user_picture_url: 1,
+      },
+    });
+  }
 }
 
 module.exports = SocialService;

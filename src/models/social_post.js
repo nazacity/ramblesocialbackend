@@ -11,10 +11,14 @@ const social_post = new Schema(
         picture_url: { type: String },
       },
     ],
-    activity_post_comments: [
+    social_category: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: 'Social_category',
+    },
+    social_post_comments: [
       {
         type: mongoose.Schema.Types.ObjectId,
-        ref: 'Activity_Post_Comment',
+        ref: 'Social_Post_Comment',
       },
     ],
     user: {
