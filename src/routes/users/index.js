@@ -188,9 +188,69 @@ const getPosts = standardize(async (req, res) => {
   });
 });
 
+const likeSocialCategoryPost = standardize(async (req, res) => {
+  const paramSchema = Joi.object({
+    id: Joi.string().required(),
+  });
+
+  const { id } = Joi.attempt(req.params, paramSchema);
+  res.json({
+    status: 200,
+    data: await SocialService.likeSocialCategoryPost(id, req.user.id),
+  });
+});
+
+const unlikeSocialCategoryPost = standardize(async (req, res) => {
+  const paramSchema = Joi.object({
+    id: Joi.string().required(),
+  });
+
+  const { id } = Joi.attempt(req.params, paramSchema);
+  res.json({
+    status: 200,
+    data: await SocialService.unlikeSocialCategoryPost(id, req.user.id),
+  });
+});
+
+const commentSocialPost = standardize(async (req, res) => {
+  const paramSchema = Joi.object({
+    id: Joi.string().required(),
+  });
+
+  const { id } = Joi.attempt(req.params, paramSchema);
+
+  const schema = Joi.object({
+    text: Joi.string().required(),
+    user: Joi.string().required(),
+  });
+
+  const data = Joi.attempt({ ...req.body, user: req.user.id }, schema);
+  res.json({
+    status: 200,
+    data: await SocialService.commentSocialPost(id, data),
+  });
+});
+
+const getPost = standardize(async (req, res) => {
+  const paramSchema = Joi.object({
+    id: Joi.string().required(),
+  });
+
+  const { id } = Joi.attempt(req.params, paramSchema);
+
+  res.json({
+    status: 200,
+    data: await SocialService.getPost(id),
+  });
+});
+
 router.get('/getsocialcategories', getSocialCategories);
 router.post('/postsocialcategories', postSocialCategories);
 router.get('/getsocialcategory/:id', getSocialCategory);
 router.post('/getposts', getPosts);
+router.get('/likesocialcatgorypost/:id', likeSocialCategoryPost);
+router.get('/unlikesocialcatgorypost/:id', unlikeSocialCategoryPost);
+router.get('/getpost/:id', getPost);
+router.post('/commentsocialpost/:id', commentSocialPost);
 
 module.exports = router;

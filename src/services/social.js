@@ -74,13 +74,132 @@ class SocialService extends AbstractService {
   async getPosts(ids) {
     return this.models.SocialPost.find({ _id: { $in: ids } }, null, {
       sort: { createdAt: -1 },
-    }).populate({
+    })
+      .populate({
+        path: 'user',
+        select: {
+          display_name: 1,
+          user_picture_url: 1,
+        },
+      })
+      .populate({
+        path: 'social_post_comments',
+        populate: {
+          path: 'user',
+          select: {
+            display_name: 1,
+            user_picture_url: 1,
+          },
+        },
+      });
+  }
+
+  async getPost(id) {
+    return this.models.SocialPost.findById(id)
+      .populate({
+        path: 'user',
+        select: {
+          display_name: 1,
+          user_picture_url: 1,
+        },
+      })
+      .populate({
+        path: 'social_post_comments',
+        populate: {
+          path: 'user',
+          select: {
+            display_name: 1,
+            user_picture_url: 1,
+          },
+        },
+      });
+  }
+
+  async likeSocialCategoryPost(id, userId) {
+    const post = await this.models.SocialPost.findById(id);
+    const likers = [...post.likers, userId];
+    const likeCount = post.likeCount + 1;
+    const newPost = await this.models.SocialPost.findByIdAndUpdate(
+      id,
+      {
+        $set: {
+          likers: likers,
+          likeCount: likeCount,
+        },
+      },
+      {
+        new: true,
+      }
+    ).populate({
       path: 'user',
       select: {
         display_name: 1,
         user_picture_url: 1,
       },
     });
+
+    return newPost;
+  }
+
+  async unlikeSocialCategoryPost(id, userId) {
+    const post = await this.models.SocialPost.findById(id);
+    const likers = post.likers.filter((item) => item.toString() !== userId);
+    const likeCount = post.likeCount - 1;
+    const newPost = await this.models.SocialPost.findByIdAndUpdate(
+      id,
+      {
+        $set: {
+          likers: likers,
+          likeCount: likeCount,
+        },
+      },
+      {
+        new: true,
+      }
+    ).populate({
+      path: 'user',
+      select: {
+        display_name: 1,
+        user_picture_url: 1,
+      },
+    });
+
+    return newPost;
+  }
+
+  async commentSocialPost(id, data) {
+    const comment = await this.models.SocialPostComment.create(data);
+    const post = await this.models.SocialPost.findById(id);
+    const social_post_comments = [comment._id, ...post.social_post_comments];
+    const newPost = await this.models.SocialPost.findByIdAndUpdate(
+      id,
+      {
+        $set: {
+          social_post_comments: social_post_comments,
+        },
+      },
+      {
+        new: true,
+      }
+    )
+      .populate({
+        path: 'user',
+        select: {
+          display_name: 1,
+          user_picture_url: 1,
+        },
+      })
+      .populate({
+        path: 'social_post_comments',
+        populate: {
+          path: 'user',
+          select: {
+            display_name: 1,
+            user_picture_url: 1,
+          },
+        },
+      });
+    return newPost;
   }
 }
 

@@ -13,7 +13,17 @@ const social_post = new Schema(
     ],
     social_category: {
       type: mongoose.Schema.Types.ObjectId,
-      ref: 'Social_category',
+      ref: 'Social_Category',
+    },
+    likers: [
+      {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'User',
+      },
+    ],
+    likeCount: {
+      type: Number,
+      default: 0,
     },
     social_post_comments: [
       {

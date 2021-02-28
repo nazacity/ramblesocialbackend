@@ -26,15 +26,6 @@ app.use(cors());
 app.use(express.json());
 app.use(passport.initialize());
 
-app.use(bodyParser.json({ limit: '50mb' }));
-app.use(
-  bodyParser.urlencoded({
-    limit: '50mb',
-    extended: true,
-    parameterLimit: 50000,
-  })
-);
-
 const createServer = async () => {
   await waitForDBConnection;
   console.info('Server Initialized!');
