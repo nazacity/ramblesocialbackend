@@ -14,6 +14,18 @@ const upload = multer({
   }),
 }).array('images[]', 3);
 
+const uploadActivity = multer({
+  storage: multerS3({
+    s3: config.S3,
+    bucket: 'ramble',
+    acl: 'public-read',
+    contentType: multerS3.AUTO_CONTENT_TYPE,
+    key: function (request, file, cb) {
+      cb(null, 'activity/' + file.originalname);
+    },
+  }),
+}).array('images[]', 3);
+
 const deleteFile = (fileName, res) => {
   const delParams = {
     Bucket: 'ramble',
@@ -29,4 +41,4 @@ const deleteFile = (fileName, res) => {
   });
 };
 
-module.exports = { upload, deleteFile };
+module.exports = { upload, deleteFile, uploadActivity };

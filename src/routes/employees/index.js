@@ -27,8 +27,6 @@ const createActivity = standardize(async (req, res) => {
 
   const activity = await ActivityService.createActivity(data);
 
-  console.log(activity);
-
   res.status(200).send({
     status: 200,
     data: activity,

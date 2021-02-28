@@ -12,6 +12,20 @@ const activity_post = new Schema(
         picture_url: { type: String },
       },
     ],
+    activity: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: 'Activity',
+    },
+    likers: [
+      {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'User',
+      },
+    ],
+    likeCount: {
+      type: Number,
+      default: 0,
+    },
     activity_post_comments: [
       {
         type: mongoose.Schema.Types.ObjectId,
@@ -22,6 +36,7 @@ const activity_post = new Schema(
       type: mongoose.Schema.Types.ObjectId,
       ref: 'User',
     },
+
     text: { type: String, require: true },
     state: {
       type: String,

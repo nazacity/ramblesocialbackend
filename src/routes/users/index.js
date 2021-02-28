@@ -6,10 +6,19 @@ const router = express.Router();
 const config = require('../../utils/config');
 const axios = require('axios');
 
-const { upload, deleteFile } = require('../../utils/spacesutil');
+const {
+  upload,
+  deleteFile,
+  uploadActivity,
+} = require('../../utils/spacesutil');
 
 const { standardize } = require('../../utils/request');
-const { UserService, BlogService, SocialService } = require('../../services');
+const {
+  UserService,
+  BlogService,
+  SocialService,
+  ActivityService,
+} = require('../../services');
 
 const getUserByJwt = standardize(async (req, res) => {
   return res.json(req.user);
@@ -252,5 +261,128 @@ router.get('/likesocialcatgorypost/:id', likeSocialCategoryPost);
 router.get('/unlikesocialcatgorypost/:id', unlikeSocialCategoryPost);
 router.get('/getpost/:id', getPost);
 router.post('/commentsocialpost/:id', commentSocialPost);
+
+const getSocialActivity = standardize(async (req, res) => {
+  const paramSchema = Joi.object({
+    id: Joi.string().required(),
+  });
+
+  const { id } = Joi.attempt(req.params, paramSchema);
+
+  res.json({
+    status: 200,
+    data: await ActivityService.getSocialActivity(id),
+  });
+});
+
+const getSocialActivityPosts = standardize(async (req, res) => {
+  const schema = Joi.array();
+
+  const ids = Joi.attempt(req.body, schema);
+
+  const posts = await ActivityService.getPosts(ids);
+
+  res.json({
+    status: 200,
+    data: posts,
+  });
+});
+
+const getSocialActivityPost = standardize(async (req, res) => {
+  const paramSchema = Joi.object({
+    id: Joi.string().required(),
+  });
+
+  const { id } = Joi.attempt(req.params, paramSchema);
+
+  res.json({
+    status: 200,
+    data: await ActivityService.getPost(id),
+  });
+});
+
+const commentSocialActivityPost = standardize(async (req, res) => {
+  const paramSchema = Joi.object({
+    id: Joi.string().required(),
+  });
+
+  const { id } = Joi.attempt(req.params, paramSchema);
+
+  const schema = Joi.object({
+    text: Joi.string().required(),
+    user: Joi.string().required(),
+  });
+
+  const data = Joi.attempt({ ...req.body, user: req.user.id }, schema);
+
+  res.json({
+    status: 200,
+    data: await ActivityService.commentSocialPost(id, data),
+  });
+});
+
+const likeSocialActivityPost = standardize(async (req, res) => {
+  const paramSchema = Joi.object({
+    id: Joi.string().required(),
+  });
+
+  const { id } = Joi.attempt(req.params, paramSchema);
+  res.json({
+    status: 200,
+    data: await ActivityService.likeSocialActivityPost(id, req.user.id),
+  });
+});
+
+const unlikeSocialActivityPost = standardize(async (req, res) => {
+  const paramSchema = Joi.object({
+    id: Joi.string().required(),
+  });
+
+  const { id } = Joi.attempt(req.params, paramSchema);
+  res.json({
+    status: 200,
+    data: await ActivityService.unlikeSocialActivityPost(id, req.user.id),
+  });
+});
+
+const postSocialActivities = standardize(async (req, res) => {
+  uploadActivity(req, res, async function (error) {
+    if (error) {
+      console.log(error);
+      return res.status(400).json({ data: 'Something went wrong' });
+    } else {
+      const pictures = req.files.map((item) => {
+        return { picture_url: item.location };
+      });
+
+      const data = {
+        user: req.user.id,
+        pictures: pictures,
+        text: req.body.text,
+        activity: req.body.activity,
+      };
+
+      const newPost = await ActivityService.createPostSocialActivity(data);
+
+      const updatedSocialCategory = await ActivityService.updatedSocialActivityPost(
+        req.body.activity,
+        newPost._id
+      );
+
+      res.json({
+        status: 200,
+        data: newPost,
+      });
+    }
+  });
+});
+
+router.get('/getsocialactivity/:id', getSocialActivity);
+router.post('/getsocialactivityposts', getSocialActivityPosts);
+router.get('/getsocialactivitypost/:id', getSocialActivityPost);
+router.post('/commentsocialactivitypost/:id', commentSocialActivityPost);
+router.get('/likesocialactivitypost/:id', likeSocialActivityPost);
+router.get('/unlikesocialactivitypost/:id', unlikeSocialActivityPost);
+router.post('/postsocialactivities', postSocialActivities);
 
 module.exports = router;
