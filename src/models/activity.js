@@ -15,13 +15,6 @@ const activity = new Schema(
       },
     ],
     title: { type: String, require: true },
-    rate_point: { type: Number, require: true, default: 0 },
-    rator: [
-      {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: 'User',
-      },
-    ],
     state: {
       type: String,
       enum: activtyPostStateEnum,
